@@ -1,5 +1,5 @@
 const SHA256 = require('crypto-js/sha256');
-
+const hex2ascii = require('hex2ascii');
 /* 
 Each block has a hash, and this is formed with the information that it contains. 
 On the other hand, it also has a previous hash referencing the previous block.
@@ -28,5 +28,37 @@ class Block {
             res(true);
         })
     }
+
+    getBlockData() {
+        const self = this;
+        return new Promise((res, rej) => {
+            // This encodedData, is the encoded body of my current block
+            let encodedData = self.body;
+            
+            // Changing format to 'text' 
+            let decodedData = hex2ascii(encodedData);
+
+            // Now we parse the 'text' into an object
+            let dataObject = JSON.parse(decodedData);
+
+            if(dataObject === 'Genesis Block') {
+                rej(new Error("This is the Genesis Block"))
+            }
+            res(dataObject);
+        })
+    }
+
+    // method to display in console the block information 
+    toString() {
+        const { hash, height, body, time, previousBlockHash } = this;
+        return `Block - 
+            hash: ${hash}
+            heigth: ${height}
+            body: ${body}
+            time: ${time}
+            previousBlockHash: ${previousBlockHash}
+            --------------------------------------`;
+    }
+
 }
 module.exports = Block;
